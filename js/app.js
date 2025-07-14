@@ -114,7 +114,7 @@ function mostrarProductos(productos) {
                 <img src="${thumbnail}" class="imagen-curso u-full-width">
                 <div class="info-card">
                     <h4>${title}</h4>
-                    <p class="precio">$${price} <span class="u-pull-right">$${(price * 0.9).toFixed(2)}</span></p>
+                    <p class="precio">$${price}</p>
                     <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="${id}">Agregar al carrito</a>
                 </div>
             </div>
