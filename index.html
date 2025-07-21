@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Tienda de Ropa Online</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+    <header id="header" class="header">
+        <div class="container">
+            <div class="row">
+                <div class="four columns">
+                    <img src="img/h&m.jpeg" id="logo" style="width: 150px; margin-top: -20px">
+                </div>
+                <div class="two columns u-pull-right">
+                    <ul>
+                        <li class="submenu">
+                            <img src="img/cart.png" id="img-carrito">
+                            <div id="carrito">
+                                <table id="lista-carrito" class="u-full-width">
+                                    <thead>
+                                        <tr>
+                                            <th>Imagen</th>
+                                            <th>Nombre</th>
+                                            <th>Precio</th>
+                                            <th>Cantidad</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <a href="#" id="vaciar-carrito" class="button u-full-width">Vaciar Carrito</a>
+                                <a href="#" id="finalizar-compra" class="button button-primary u-full-width">Finalizar Compra</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="hero">
+        <div class="container">
+            <div class="row">
+                <div class="six columns">
+                    <div class="contenido-hero">
+                        <h2>Nueva Temporada</h2>
+                        <p>Descuentos en productos seleccionados</p>
+                        <form id="form-buscador">
+                            <input type="search" id="buscador" class="u-full-width" placeholder="Buscar productos...">
+                            <input type="submit" class="submit-buscador" value="">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="barra">
+        <div class="container">
+            <div class="row">
+                <div class="four columns icono icono1">
+                    <p>Locales en todo el país</p>
+                    <p>Explora las nuevas tendencias</p>
+                </div>
+                <div class="four columns icono icono2">
+                    <p>Promociones únicas</p>
+                    <p>Cuotas sin interés</p>
+                </div>
+                <div class="four columns icono icono3">
+                    <p>De Lunes a Sábados</p>
+                    <p>10:00 am - 21:00 pm</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="encabezado">
+            <h2>Nuestros Productos</h2>
+        </div>
+        <div id="lista-productos">
+            <div class="row"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="six columns">
+                    <nav class="menu">
+                        <a href="#">Para tu Negocio</a>
+                        <a href="#">Conviértete en Instructor</a>
+                        <a href="#">Aplicaciones Móviles</a>
+                        <a href="#">Soporte</a>
+                        <a href="#">Temas</a>
+                    </nav>
+                </div>
+                <div class="six columns">
+                    <nav class="menu">
+                        <a href="#">¿Quiénes Somos?</a>
+                        <a href="#">Empleo</a>
+                        <a href="#">Blog</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js?v=3"></script>
+</body>
+</html>
