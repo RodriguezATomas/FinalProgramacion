@@ -1,4 +1,5 @@
 <?php
+//Establece la conexion con la base de datos
 $conn = mysqli_connect("localhost", "root", "", "productos");
 if (!$conn) {
     header('Content-Type: application/json; charset=utf-8');

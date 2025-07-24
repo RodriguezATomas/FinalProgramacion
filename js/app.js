@@ -1,24 +1,32 @@
+// === Selección de elementos del DOM ===
+const carrito = document.querySelector('#img-carrito'); // Icono o imagen del carrito
+const listaProductos = document.querySelector('#lista-productos .row'); // Contenedor de productos
+const contenedorCarrito = document.querySelector('#lista-carrito tbody'); // Contenedor donde se mostrarán los productos en el carrito
+const vaciarCarritoBtn = document.querySelector('#vaciar-carrito'); // Botón para vaciar todo el carrito
+const finalizarCompraBtn = document.querySelector('#finalizar-compra'); // Botón para finalizar la compra
+const formBuscador = document.querySelector('#form-buscador'); // Formulario de búsqueda
 
-const carrito = document.querySelector('#img-carrito'); 
-const listaProductos = document.querySelector('#lista-productos .row');
-const contenedorCarrito = document.querySelector('#lista-carrito tbody'); 
-const vaciarCarritoBtn = document.querySelector('#vaciar-carrito'); 
-const finalizarCompraBtn = document.querySelector('#finalizar-compra');
-const formBuscador = document.querySelector('#form-buscador');
-let articulosCarrito = []; 
-let productosOriginales = [];
+let articulosCarrito = []; // Lista de productos agregados al carrito
+let productosOriginales = []; // Lista original de productos traídos desde la base de datos (para filtrado)
 
-cargarEventListeners(); 
+// === Inicialización ===
+cargarEventListeners(); // Carga los listeners de eventos
+
+// Cuando se termina de cargar el DOM, se cargan los productos desde PHP
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM cargado, iniciando carga de productos');
-    cargarProductos();
+    cargarProductos(); // Trae productos desde productos.php
 });
 
+// === Función para cargar todos los eventos ===
 function cargarEventListeners() {
+    // Si el contenedor de productos no está, se lanza error
     if (!listaProductos) {
         console.error('Error: #lista-productos .row no encontrado en el DOM');
         return;
     }
+
+    // Evento para agregar productos al carrito
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('agregar-carrito')) {
             e.preventDefault();
@@ -28,59 +36,62 @@ function cargarEventListeners() {
                 return;
             }
             console.log('Producto seleccionado:', productoSeleccionado.innerHTML);
-            leerDatosProducto(productoSeleccionado);
+            leerDatosProducto(productoSeleccionado); // Extrae datos del producto y lo agrega al carrito
         }
     });
 
+    // Evento para eliminar productos desde el carrito
     if (contenedorCarrito) {
-        contenedorCarrito.addEventListener('click', eliminarProducto); 
+        contenedorCarrito.addEventListener('click', eliminarProducto);
     } else {
         console.error('Error: #lista-carrito tbody no encontrado en el DOM');
     }
 
+    // Evento para vaciar el carrito
     if (vaciarCarritoBtn) {
-        vaciarCarritoBtn.addEventListener('click', () => { 
-            articulosCarrito = []; 
-            limpiarHTML(); 
-        }); 
-    } else {
-        console.error('Error: #vaciar-carrito no encontrado en el DOM');
+        vaciarCarritoBtn.addEventListener('click', () => {
+            articulosCarrito = []; // Vacía el array
+            limpiarHTML(); // Limpia la tabla del carrito
+        });
     }
 
+    // Evento para finalizar la compra
     if (finalizarCompraBtn) {
         finalizarCompraBtn.addEventListener('click', finalizarCompra);
-    } else {
-        console.error('Error: #finalizar-compra no encontrado en el DOM');
     }
 
+    // Eventos para búsqueda (submit y mientras se escribe)
     if (formBuscador) {
         formBuscador.addEventListener('submit', (e) => {
             e.preventDefault();
             filtrarProductos();
         });
         formBuscador.querySelector('#buscador').addEventListener('input', filtrarProductos);
-    } else {
-        console.error('Error: #form-buscador no encontrado en el DOM');
     }
 }
 
+// === Elimina un producto del carrito ===
 function eliminarProducto(e) {
     e.preventDefault();
     if (e.target.classList.contains('borrar-producto')) {
-        const productoId = e.target.getAttribute('data-id'); 
+        const productoId = e.target.getAttribute('data-id');
         console.log('Eliminando producto con ID:', productoId);
-        articulosCarrito = articulosCarrito.filter(producto => producto.id !== productoId);  
-        carritoHTML(); 
+        // Se filtra para mantener solo los productos distintos al eliminado
+        articulosCarrito = articulosCarrito.filter(producto => producto.id !== productoId);
+        carritoHTML(); // Vuelve a renderizar el carrito
     }
 }
 
-function leerDatosProducto(producto) { 
+// === Lee los datos del producto y lo agrega al carrito ===
+function leerDatosProducto(producto) {
+    // Extrae los datos de la tarjeta del producto
     const img = producto.querySelector('img');
     const h4 = producto.querySelector('h4');
     const precioSpan = producto.querySelector('.precio span');
     const link = producto.querySelector('a[data-id]');
     const stockSpan = producto.querySelector('.stock');
 
+    // Verifica que todos los elementos existan
     if (!img || !h4 || !precioSpan || !link || !stockSpan) {
         console.error('Error: No se encontraron todos los elementos necesarios en la card', {
             img: !!img,
@@ -92,8 +103,9 @@ function leerDatosProducto(producto) {
         return;
     }
 
-    const infoProducto = { 
-        imagen: img.src, 
+    // Crea un objeto con la información del producto
+    const infoProducto = {
+        imagen: img.src,
         titulo: h4.textContent,
         precio: precioSpan.textContent,
         id: link.getAttribute('data-id'),
@@ -101,15 +113,15 @@ function leerDatosProducto(producto) {
         stock: parseInt(stockSpan.textContent)
     };
 
+    // Verifica que no se exceda el stock al agregarlo
     const enCarrito = articulosCarrito.reduce((total, p) => p.id === infoProducto.id ? total + p.cantidad : total, 0);
     if (enCarrito + 1 > infoProducto.stock) {
         alert(`No hay suficiente stock para ${infoProducto.titulo}. Stock disponible: ${infoProducto.stock}`);
         return;
     }
 
-    console.log('Agregando producto al carrito:', infoProducto);
-
-    const existe = articulosCarrito.some(producto => producto.id === infoProducto.id); 
+    // Si ya existe el producto, incrementa su cantidad
+    const existe = articulosCarrito.some(producto => producto.id === infoProducto.id);
     if (existe) {
         articulosCarrito = articulosCarrito.map(producto => {
             if (producto.id === infoProducto.id) {
@@ -118,20 +130,23 @@ function leerDatosProducto(producto) {
                     return producto;
                 }
                 producto.cantidad++;
-                return producto; 
+                return producto;
             }
             return producto;
         });
     } else {
+        // Si no existe, lo agrega al array
         articulosCarrito = [...articulosCarrito, infoProducto];
     }
 
-    carritoHTML(); 
+    carritoHTML(); // Muestra el carrito en el HTML
 }
 
-function carritoHTML() { 
-    limpiarHTML(); 
-    articulosCarrito.forEach(producto => { 
+// === Muestra los productos del carrito en el HTML ===
+function carritoHTML() {
+    limpiarHTML(); // Limpia antes de renderizar
+
+    articulosCarrito.forEach(producto => {
         const { imagen, titulo, precio, cantidad, id } = producto;
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -141,25 +156,18 @@ function carritoHTML() {
             <td>${cantidad}</td>
             <td><a href="#" class="borrar-producto" data-id="${id}"> X </a></td>
         `;
-        if (contenedorCarrito) {
-            contenedorCarrito.appendChild(row); 
-        } else {
-            console.error('Error: #lista-carrito tbody no encontrado en el DOM');
-        }
-        console.log('Añadiendo fila al carrito con imagen:', imagen);
+        contenedorCarrito.appendChild(row); // Lo agrega a la tabla
     });
 }
 
+// === Limpia el contenido del carrito en la vista HTML ===
 function limpiarHTML() {
-    if (!contenedorCarrito) {
-        console.error('Error: #lista-carrito tbody no encontrado en el DOM');
-        return;
-    }
-    while (contenedorCarrito.firstChild) { 
-        contenedorCarrito.removeChild(contenedorCarrito.firstChild); 
+    while (contenedorCarrito.firstChild) {
+        contenedorCarrito.removeChild(contenedorCarrito.firstChild);
     }
 }
 
+// === Carga los productos desde PHP ===
 function cargarProductos() {
     fetch('php/productos.php')
         .then(res => {
@@ -169,13 +177,11 @@ function cargarProductos() {
             return res.json();
         })
         .then(productos => {
-            console.log('Productos recibidos:', productos);
             if (productos.length === 0) {
-                console.warn('No se encontraron productos en la base de datos');
                 listaProductos.innerHTML = '<p>No hay productos disponibles.</p>';
             } else {
-                productosOriginales = productos;
-                mostrarProductos(productos);
+                productosOriginales = productos; // Guarda todos los productos para búsquedas
+                mostrarProductos(productos); // Los muestra en pantalla
             }
         })
         .catch(error => {
@@ -184,16 +190,12 @@ function cargarProductos() {
         });
 }
 
+// === Muestra los productos en el HTML como tarjetas ===
 function mostrarProductos(productos) {
-    if (!listaProductos) {
-        console.error('Error: #lista-productos .row no encontrado en el DOM');
-        return;
-    }
     listaProductos.innerHTML = '';
     productos.forEach(producto => {
         const { id, descripcion, precio, imagen, stock } = producto;
         const imgSrc = imagen && imagen !== '' ? imagen : 'https://via.placeholder.com/150';
-        console.log('Renderizando imagen:', imgSrc);
 
         const card = document.createElement('div');
         card.classList.add('four', 'columns');
@@ -208,62 +210,54 @@ function mostrarProductos(productos) {
                 </div>
             </div>
         `;
-        listaProductos.appendChild(card);
+        listaProductos.appendChild(card); // Agrega la tarjeta al contenedor
     });
-    console.log('Cards renderizadas en #lista-productos .row');
 }
 
+// === Filtra los productos según el texto ingresado ===
 function filtrarProductos() {
     const textoBusqueda = document.querySelector('#buscador').value.toLowerCase().trim();
-    console.log('Buscando:', textoBusqueda);
 
-    if (!productosOriginales.length) {
-        console.warn('No hay productos cargados para filtrar');
-        return;
-    }
+    if (!productosOriginales.length) return;
 
-    const productosFiltrados = productosOriginales.filter(producto => 
+    const productosFiltrados = productosOriginales.filter(producto =>
         producto.descripcion.toLowerCase().includes(textoBusqueda)
     );
-
-    console.log('Productos filtrados:', productosFiltrados);
 
     if (productosFiltrados.length === 0) {
         listaProductos.innerHTML = '<p>No se encontraron productos</p>';
     } else {
-        mostrarProductos(productosFiltrados);
+        mostrarProductos(productosFiltrados); // Muestra resultados filtrados
     }
 }
 
+// === Envía la compra al servidor y vacía el carrito ===
 async function finalizarCompra() {
     if (articulosCarrito.length === 0) {
         alert('El carrito está vacío');
         return;
     }
 
-    console.log('Enviando datos al servidor:', JSON.stringify(articulosCarrito, null, 2));
     try {
         const res = await fetch('php/finalizar_compra.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(articulosCarrito)
+            body: JSON.stringify(articulosCarrito) // Envío como JSON
         });
 
-        console.log('Respuesta del servidor:', { status: res.status, statusText: res.statusText });
         if (!res.ok) {
             throw new Error(`Error en la solicitud: ${res.status} ${res.statusText}`);
         }
 
         const data = await res.json();
-        console.log('Datos recibidos del servidor:', data);
 
         if (data.success) {
             alert('Compra finalizada con éxito');
-            articulosCarrito = [];
-            limpiarHTML();
-            cargarProductos(); // Recargar productos para actualizar stock
+            articulosCarrito = []; // Vacía el carrito
+            limpiarHTML(); // Limpia la tabla
+            cargarProductos(); // Recarga productos actualizados (por el stock)
         } else {
             alert('Error al finalizar la compra: ' + data.message);
         }
