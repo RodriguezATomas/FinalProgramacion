@@ -24,6 +24,7 @@ header {
         text-align: left;
     }
 }
+
 .borrar-producto {
     background-color: red;
     border-radius: 50%;
@@ -31,6 +32,12 @@ header {
     text-decoration: none;
     color: white;
     font-weight: bold;
+}
+
+.stock {
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0;
 }
 ul {
     list-style: none;

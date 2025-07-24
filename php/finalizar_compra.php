@@ -54,8 +54,8 @@ try {
         $precio = floatval($producto['precio']);
         $imagen = $producto['imagen'];
 
-        // Verificar stock
-        $sql_stock = "SELECT stock FROM ropa WHERE id = ?";
+        // Verificar y bloquear stock
+        $sql_stock = "SELECT stock FROM ropa WHERE id = ? FOR UPDATE";
         $stmt_stock = $conn->prepare($sql_stock);
         if (!$stmt_stock) {
             throw new Exception('Error al preparar la consulta de stock: ' . $conn->error);
@@ -88,8 +88,7 @@ try {
 
     // Confirmar transacción
     $conn->commit();
-    echo json_encode(['success' => true]);
-
+    echo json_encode(['success' => true, 'message' => 'Compra finalizada con éxito']);
 } catch (Exception $e) {
     // Revertir transacción
     $conn->rollback();
